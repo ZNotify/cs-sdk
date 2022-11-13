@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZNotify", "src\ZNotify\ZNotify.csproj", "{A4A8DA72-4748-400C-9577-4F50FE2D0091}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZNotify.Test", "src\ZNotify.Test\ZNotify.Test.csproj", "{9691DF3B-325A-4FC0-8329-9C1C46111373}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4A8DA72-4748-400C-9577-4F50FE2D0091}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4A8DA72-4748-400C-9577-4F50FE2D0091}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4A8DA72-4748-400C-9577-4F50FE2D0091}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4A8DA72-4748-400C-9577-4F50FE2D0091}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9691DF3B-325A-4FC0-8329-9C1C46111373}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9691DF3B-325A-4FC0-8329-9C1C46111373}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9691DF3B-325A-4FC0-8329-9C1C46111373}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9691DF3B-325A-4FC0-8329-9C1C46111373}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

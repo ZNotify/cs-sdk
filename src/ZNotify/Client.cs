@@ -1,22 +1,20 @@
 ﻿// ReSharper disable MemberCanBePrivate.Global
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FluentResults;
 using Newtonsoft.Json;
 using ZNotify.Entity;
 using ZNotify.Utils;
 
 namespace ZNotify;
 
-using ResultCE = Result<Client, Exception>;
-
 public class Client
 {
-    private HttpClient _client;
-    private string _userId;
+    private readonly HttpClient _client;
+    private readonly string _userId;
     private readonly string _endpoint;
 
     private Client(string userId, string endpoint = Static.DefaultEndpoint)
@@ -26,16 +24,16 @@ public class Client
         _client = new HttpClient();
     }
 
-    private async Task<ResultCE> Create(string userId, string endpoint = Static.DefaultEndpoint)
+    private async Task<Result<Client>> Create(string userId, string endpoint = Static.DefaultEndpoint)
     {
         var result = await Check(userId, endpoint);
         if (result)
         {
-            return ResultCE.Good(new Client(userId, endpoint));
+            return Result.Ok(new Client(userId, endpoint));
         }
         else
         {
-            return ResultCE.Bad(new Exception("UserId not valid"));
+            return Result.Fail("UserId not valid");
         }
     }
 
@@ -87,24 +85,26 @@ public class Client
         }
     }
 
-    public async Task<bool> Register(string deviceId, string token, string channel = ChannelType.UWP)
+    public async Task<Result<bool>> Register(string deviceId, string token, string channel)
     {
-        var data = new List<KeyValuePair<string, string>>();
-        data.Add(new KeyValuePair<string, string>("channel", channel));
-        data.Add(new KeyValuePair<string, string>("token", token));
+        var data = new List<KeyValuePair<string, string>>
+        {
+            new("channel", channel),
+            new("token", token)
+        };
 
         var url = $"{_endpoint}/{_userId}/token/{deviceId}";
         var response = await _client.PutAsync(url, new FormUrlEncodedContent(data));
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<Response<bool>>(content)!.Body;
+            return Result.Ok(JsonConvert.DeserializeObject<Response<bool>>(content)!.Body);
         }
         else
         {
             var content = await response.Content.ReadAsStringAsync();
             var errText = JsonConvert.DeserializeObject<Response<string>>(content)!.Body;
-            throw new Exception(errText);
+            return Result.Fail(errText);
         }
     }
 }

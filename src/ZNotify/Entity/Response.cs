@@ -4,7 +4,8 @@ namespace ZNotify.Entity;
 
 public record Response<T>
 {
-    Response(int code, T body)
+    [JsonConstructor]
+    public Response(int code, T body)
     {
         Code = code;
         Body = body;

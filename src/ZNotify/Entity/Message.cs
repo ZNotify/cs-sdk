@@ -4,7 +4,8 @@ namespace ZNotify.Entity;
 
 public record Message
 {
-    Message(string id, string userId, string content, string title, string longContent, string createdAt)
+    [JsonConstructor]
+    public Message(string id, string userId, string content, string title, string longContent, string createdAt)
     {
         Id = id;
         UserId = userId;

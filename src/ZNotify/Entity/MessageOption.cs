@@ -1,26 +1,42 @@
 ﻿// ReSharper disable MemberCanBePrivate.Global
+
+using System.ComponentModel;
+
 namespace ZNotify.Entity;
 
-public record MessageOption
+public record struct MessageOption
 {
-    public class Priorities
-    {
-        public const string Low = "low";
-        public const string Normal = "normal";
-        public const string High = "high";
-    }
-
-    MessageOption(string content, string longContent = "", string title = "Notification",
-        string priority = Priorities.Normal)
+    public MessageOption(string content)
     {
         Content = content;
-        LongContent = longContent;
-        Title = title;
-        Priority = priority;
     }
-
-    public string Content;
-    public string LongContent;
-    public string Title;
-    public string Priority;
+    
+    public string Content = "";
+    public string LongContent = "";
+    public string Title = "Notification";
+    public PriorityType Priority = PriorityType.NORMAL;
 }
+
+public enum PriorityType
+{
+    [Description("low")]
+    LOW,
+    
+    [Description("normal")]
+    NORMAL,
+    
+    [Description("high")]
+    HIGH
+}
+
+public static class PriorityExtension
+{
+    public static string GetDescription(this PriorityType priorityType)
+    {
+        var type = priorityType.GetType();
+        var memInfo = type.GetMember(priorityType.ToString());
+        var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
+        return ((DescriptionAttribute)attributes[0]).Description;
+    }
+}
+

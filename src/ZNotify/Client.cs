@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentResults;
 using Newtonsoft.Json;
 using ZNotify.Entity;
-using ZNotify.Utils;
 
 namespace ZNotify;
 
@@ -24,27 +23,23 @@ public class Client
         _client = new HttpClient();
     }
 
-    private async Task<Result<Client>> Create(string userId, string endpoint = Static.DefaultEndpoint)
+    public static async Task<Result<Client>> Create(string userId, string endpoint = Static.DefaultEndpoint)
     {
         var result = await Check(userId, endpoint);
-        if (result)
-        {
-            return Result.Ok(new Client(userId, endpoint));
-        }
-        else
-        {
-            return Result.Fail("UserId not valid");
-        }
+        return result ? Result.Ok(new Client(userId, endpoint)) : Result.Fail("UserId not valid");
     }
 
     public static async Task<bool> Check(string userId, string endpoint = Static.DefaultEndpoint)
     {
-        var client = new Client(userId, endpoint);
-        var response = await new HttpClient().GetAsync(client._endpoint + "/check");
-        return response.IsSuccessStatusCode;
+        var urlBase = $"{endpoint}/check";
+        // query string encode
+        var url = $"{urlBase}?user_id={Uri.EscapeDataString(userId)}";
+        var response = await new HttpClient().GetAsync(url);
+        var responseString = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<Response<bool>>(responseString)!.Body;
     }
 
-    public async Task<Message> Send(MessageOption option)
+    public async Task<Result<Message>> Send(MessageOption option)
     {
         var data = new List<KeyValuePair<string, string>>();
 
@@ -54,7 +49,7 @@ public class Client
         }
         else
         {
-            throw new Exception("Content is required");
+            return Result.Fail("Content is required");
         }
 
         if (option.Title.Length > 0)
@@ -67,7 +62,7 @@ public class Client
             data.Add(new KeyValuePair<string, string>("long", option.LongContent));
         }
 
-        data.Add(new KeyValuePair<string, string>("priority", option.Priority));
+        data.Add(new KeyValuePair<string, string>("priority", option.Priority.GetDescription()));
 
         var url = $"{_endpoint}/{_userId}/send";
 
@@ -75,21 +70,26 @@ public class Client
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<Response<Message>>(content)!.Body;
+            return Result.Ok(JsonConvert.DeserializeObject<Response<Message>>(content)!.Body);
         }
         else
         {
             var content = await response.Content.ReadAsStringAsync();
             var errText = JsonConvert.DeserializeObject<Response<string>>(content)!.Body;
-            throw new Exception(errText);
+            return Result.Fail(errText);
         }
     }
 
-    public async Task<Result<bool>> Register(string deviceId, string token, string channel)
+    public async Task<Result<bool>> Register(string deviceId, string token, ChannelType channel)
     {
+        if (!Guid.TryParse(deviceId, out _))
+        {
+            return Result.Fail("DeviceId is not UUID");
+        }
+        
         var data = new List<KeyValuePair<string, string>>
         {
-            new("channel", channel),
+            new("channel", channel.GetDescription()),
             new("token", token)
         };
 

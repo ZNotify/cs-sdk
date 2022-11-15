@@ -37,7 +37,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
         
       - name: Pack
-        run: dotnet pack --configuration Release --no-build --output ./artifacts --include-symbols --include-source
+        run: dotnet pack --configuration Release --no-build --output ./artifacts
         
       - name: Publish to Nuget
         run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json

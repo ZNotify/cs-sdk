@@ -64,3 +64,4 @@ riderModule.iml
 .git/
 .vs/
 *.user
+artifacts/

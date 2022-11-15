@@ -4,14 +4,11 @@ on:
   release: 
     types:
       - published
+  workflow_dispatch: 
 
 jobs:
   release:
-    name: build-and-test-${{matrix.os}}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -32,9 +29,6 @@ jobs:
       
       - name: Login GitHub Package
         run: dotnet nuget add source https://nuget.pkg.github.com/ZNotify/index.json --name github -u ZNotify -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
-        
-      - name: Login Nuget
-        run: dotnet nuget add source https://api.nuget.org/v3/index.json --name nuget -u Zxilly -p ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text
 
       - name: Install dependencies
         run: dotnet restore
@@ -46,7 +40,7 @@ jobs:
         run: dotnet pack --configuration Release --no-build --output ./artifacts --include-symbols --include-source
         
       - name: Publish to Nuget
-        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source nuget
+        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
         
       - name: Publish to GitHub Package
         run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source github

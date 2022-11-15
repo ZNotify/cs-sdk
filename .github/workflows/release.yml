@@ -1,0 +1,52 @@
+﻿name: build and test
+
+on:
+  release: 
+    types:
+      - published
+
+jobs:
+  build-and-test:
+    name: build-and-test-${{matrix.os}}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: ZNotify/cs-sdk
+
+      - uses: ZNotify/test-server-action@master
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+      
+      - name: Login GitHub Package
+        run: dotnet nuget add source https://nuget.pkg.github.com/ZNotify/index.json --name github -u ZNotify -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
+        
+      - name: Login Nuget
+        run: dotnet nuget add source https://api.nuget.org/v3/index.json --name nuget -u Zxilly -p ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        
+      - name: Pack
+        run: dotnet pack --configuration Release --no-build --output ./artifacts --include-symbols --include-source
+        
+      - name: Publish to Nuget
+        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source nuget
+        
+      - name: Publish to GitHub Package
+        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source github

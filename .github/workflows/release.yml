@@ -46,7 +46,7 @@ jobs:
         run: dotnet pack --configuration Release --no-build --output ./artifacts --include-symbols --include-source
         
       - name: Publish to Nuget
-        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source nuget
+        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source nuget
         
       - name: Publish to GitHub Package
         run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source github

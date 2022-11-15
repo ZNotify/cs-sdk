@@ -6,7 +6,7 @@ on:
       - published
 
 jobs:
-  build-and-test:
+  release:
     name: build-and-test-${{matrix.os}}
     runs-on: ${{ matrix.os }}
     strategy:

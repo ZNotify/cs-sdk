@@ -107,4 +107,21 @@ public class Client
             return Result.Fail(errText);
         }
     }
+
+    public async Task<Result<List<Message>>> FetchMessage()
+    {
+        var url = $"{_endpoint}/{_userId}/record";
+        var response = await _client.GetAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            return Result.Ok(JsonConvert.DeserializeObject<Response<List<Message>>>(content)!.Body);
+        }
+        else
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var errText = JsonConvert.DeserializeObject<Response<string>>(content)!.Body;
+            return Result.Fail(errText);
+        }
+    }
 }

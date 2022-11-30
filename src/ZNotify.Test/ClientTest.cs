@@ -92,4 +92,17 @@ public class ClientTests
             Assert.That(registerResult.Value, Is.True);
         });
     }
+
+    [Test]
+    public async Task TestFetchMessage()
+    {
+        var result = await Client.Create("test", TestEndpoint);
+        var client = result.Value;
+        var fetchResult = await client.FetchMessage();
+        Assert.Multiple(() =>
+        {
+            Assert.That(fetchResult.IsSuccess, Is.True);
+            Assert.That(fetchResult.Value, Is.Not.Null);
+        });
+    }
 }

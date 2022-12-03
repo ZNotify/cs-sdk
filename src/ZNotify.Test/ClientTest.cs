@@ -38,7 +38,7 @@ public class ClientTests
         {
             Title = "Test",
             Content = "",
-            Priority = PriorityType.HIGH,
+            Priority = PriorityType.High,
             LongContent = "LongTest"
         });
         Assert.Multiple(() =>
@@ -57,7 +57,7 @@ public class ClientTests
         {
             Title = "Test",
             Content = "",
-            Priority = PriorityType.HIGH,
+            Priority = PriorityType.High,
             LongContent = "LongTest"
         });
         Assert.Multiple(() =>

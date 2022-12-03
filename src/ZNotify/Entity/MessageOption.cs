@@ -14,19 +14,19 @@ public record struct MessageOption
     public string Content = "";
     public string LongContent = "";
     public string Title = "Notification";
-    public PriorityType Priority = PriorityType.NORMAL;
+    public PriorityType Priority = PriorityType.Normal;
 }
 
 public enum PriorityType
 {
     [Description("low")]
-    LOW,
+    Low,
     
     [Description("normal")]
-    NORMAL,
+    Normal,
     
     [Description("high")]
-    HIGH
+    High
 }
 
 public static class PriorityExtension

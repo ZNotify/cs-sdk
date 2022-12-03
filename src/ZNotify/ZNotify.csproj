@@ -7,7 +7,7 @@
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <Title>ZNotify SDK</Title>
         <Authors>Zxilly</Authors>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <PackageProjectUrl>https://github.com/ZNotify/cs-sdk</PackageProjectUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/ZNotify/cs-sdk</RepositoryUrl>

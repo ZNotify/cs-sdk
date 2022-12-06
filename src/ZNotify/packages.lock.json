@@ -4,9 +4,9 @@
     ".NETStandard,Version=v2.1": {
       "FluentResults": {
         "type": "Direct",
-        "requested": "[3.15.0, )",
-        "resolved": "3.15.0",
-        "contentHash": "Ap/7cQ+7cD5yEp7C8HnMf8F5D9J8EgZPEIo21+0B7VxipRb3aM8aeZ3Se0Tl1x8bfHOvEBdwQdgAwIoiPHJU4A==",
+        "requested": "[3.15.1, )",
+        "resolved": "3.15.1",
+        "contentHash": "F5zd5+5cOG0Kn0rAXsoA3B2+7FHkCEHpz7d+tdcKZ25P1iufk1MqtfKR9fLZ+vTv9hekVpj9hi3h5Fv5/rQTzw==",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "6.0.1",
           "System.Threading.Tasks.Extensions": "4.5.4"

@@ -20,7 +20,15 @@ public class Client
     {
         _userId = userId;
         _endpoint = endpoint;
-        _client = new HttpClient();
+        _client = GetHttpClient();
+    }
+
+    private static HttpClient GetHttpClient()
+    {
+        var client = new HttpClient();
+        var version = typeof(Client).Assembly.GetName().Version.ToString();
+        client.DefaultRequestHeaders.Add("User-Agent", $"znotify-cs-sdk/{version}");
+        return client;
     }
 
     public static async Task<Result<Client>> Create(string userId, string endpoint = Static.DefaultEndpoint)
@@ -34,7 +42,8 @@ public class Client
         var urlBase = $"{endpoint}/check";
         // query string encode
         var url = $"{urlBase}?user_id={Uri.EscapeDataString(userId)}";
-        var response = await new HttpClient().GetAsync(url);
+        
+        var response = await GetHttpClient().GetAsync(url);
         var responseString = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<Response<bool>>(responseString)!.Body;
     }

@@ -15,7 +15,7 @@ public class ClientTests
         Assert.Multiple(() =>
         {
             Assert.That(result.IsSuccess, Is.False);
-            // Assert.That(result., Is.True);
+            Assert.That(result.Errors.Count, Is.GreaterThanOrEqualTo(1));
         });
     }
 

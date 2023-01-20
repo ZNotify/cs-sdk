@@ -12,11 +12,27 @@
           "System.Threading.Tasks.Extensions": "4.5.4"
         }
       },
+      "Microsoft.Extensions.ApiDescription.Client": {
+        "type": "Direct",
+        "requested": "[7.0.2, )",
+        "resolved": "7.0.2",
+        "contentHash": "gSObdZ5LVFpgkdY8Tt1RzVD+8Xd7SN95ePuPiceAZbRL/EHZzAVTiH2sNsRwHcuMBu7nlTpeMDUjJDUCQuvK0A=="
+      },
       "Newtonsoft.Json": {
         "type": "Direct",
         "requested": "[13.0.2, )",
         "resolved": "13.0.2",
         "contentHash": "R2pZ3B0UjeyHShm9vG+Tu0EBb2lC8b0dFzV9gVn50ofHXh9Smjk6kTn7A/FdAsC8B5cKib1OnGYOXxRBz5XQDg=="
+      },
+      "NSwag.ApiDescription.Client": {
+        "type": "Direct",
+        "requested": "[13.18.2, )",
+        "resolved": "13.18.2",
+        "contentHash": "uViMdjUscfeqrlDY4q9O2a0t2cMqsOx1kdX9WLyQjTXea1xjAHgQFCYlgE6ibwkYcUDJDlwEYUzvsJelL6SY3g==",
+        "dependencies": {
+          "Microsoft.Extensions.ApiDescription.Client": "6.0.3",
+          "NSwag.MSBuild": "13.18.2"
+        }
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "Transitive",
@@ -26,6 +42,11 @@
           "System.Buffers": "4.5.1",
           "System.Memory": "4.5.4"
         }
+      },
+      "NSwag.MSBuild": {
+        "type": "Transitive",
+        "resolved": "13.18.2",
+        "contentHash": "SRQ3mONkfbJWhZxA1yOFMJMXavUvnXwcoYU23qoVqSEY2G+y8jZuq9ErWm76JT0Kn5/Ml5UhG1FWmLhkqd4/+A=="
       },
       "System.Buffers": {
         "type": "Transitive",

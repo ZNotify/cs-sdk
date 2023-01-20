@@ -27,8 +27,22 @@
     </ItemGroup>
 
     <ItemGroup>
+      <OpenApiReference Include="OpenAPIs\swagger.json" CodeGenerator="NSwagCSharp" Namespace="ZNotify" ClassName="APIClient">
+        <SourceUri>https://raw.githubusercontent.com/ZNotify/server/master/docs/swagger.json</SourceUri>
+      </OpenApiReference>
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="FluentResults" Version="3.15.1" />
+      <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="7.0.2">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+      <PackageReference Include="NSwag.ApiDescription.Client" Version="13.18.2">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>

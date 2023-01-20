@@ -1,6 +1,6 @@
 ﻿namespace ZNotify;
 
-internal static partial class Static
+internal static class Static
 {
     public const string DefaultEndpoint = "https://push.learningman.top";
 }

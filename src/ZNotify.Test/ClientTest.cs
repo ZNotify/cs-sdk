@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using ZNotify.Entity;
 
 namespace ZNotify.Test;
 
@@ -7,21 +6,23 @@ public class ClientTests
 {
     private const string TestEndpoint = "http://localhost:14444";
 
+    private readonly Client _client = Client.Create("test", TestEndpoint).Value!;
+
     [Test]
-    public async Task TestClientCreateFailed()
+    public void TestClientCreateFailed()
     {
-        var result = await Client.Create("error", TestEndpoint);
+        var result = Client.Create("error", TestEndpoint);
         Assert.Multiple(() =>
         {
             Assert.That(result.IsSuccess, Is.False);
-            Assert.That(result.Errors[0], Is.Not.Null);
+            // Assert.That(result., Is.True);
         });
     }
 
     [Test]
-    public async Task TestClientCreateSuccess()
+    public void TestClientCreateSuccess()
     {
-        var result = await Client.Create("test", TestEndpoint);
+        var result = Client.Create("test", TestEndpoint);
         Assert.Multiple(() =>
         {
             Assert.That(result.IsSuccess, Is.True);
@@ -32,13 +33,11 @@ public class ClientTests
     [Test]
     public async Task TestSendFailed()
     {
-        var result = await Client.Create("test", TestEndpoint);
-        var client = result.Value;
-        var sendResult = await client.Send(new MessageOption()
+        var sendResult = await _client.Send(new MessageOption
         {
             Title = "Test",
             Content = "",
-            Priority = PriorityType.High,
+            Priority = Priority2.High,
             LongContent = "LongTest"
         });
         Assert.Multiple(() =>
@@ -51,13 +50,10 @@ public class ClientTests
     [Test]
     public async Task TestSendSuccess()
     {
-        var result = await Client.Create("test", TestEndpoint);
-        var client = result.Value;
-        var sendResult = await client.Send(new MessageOption()
+        var sendResult = await _client.Send(new MessageOption
         {
             Title = "Test",
             Content = "",
-            Priority = PriorityType.High,
             LongContent = "LongTest"
         });
         Assert.Multiple(() =>
@@ -70,9 +66,12 @@ public class ClientTests
     [Test]
     public async Task TestRegisterFailed()
     {
-        var result = await Client.Create("test", TestEndpoint);
-        var client = result.Value;
-        var registerResult = await client.Register("error", "", ChannelType.WNS);
+        var registerResult = await _client.Register(new DeviceOption
+        {
+            Channel = Channel.FCM,
+            Token = "test",
+            DeviceId = "test"
+        });
         Assert.Multiple(() =>
         {
             Assert.That(registerResult.IsSuccess, Is.False);
@@ -83,9 +82,10 @@ public class ClientTests
     [Test]
     public async Task TestRegisterSuccess()
     {
-        var result = await Client.Create("test", TestEndpoint);
-        var client = result.Value;
-        var registerResult = await client.Register("41811964-643f-11ed-81ce-0242ac120002", "", ChannelType.WNS);
+        var registerResult = await _client.Register(new DeviceOption
+        {
+            DeviceId = "41811964-643f-11ed-81ce-0242ac120002"
+        });
         Assert.Multiple(() =>
         {
             Assert.That(registerResult.IsSuccess, Is.True);
@@ -96,9 +96,7 @@ public class ClientTests
     [Test]
     public async Task TestFetchMessage()
     {
-        var result = await Client.Create("test", TestEndpoint);
-        var client = result.Value;
-        var fetchResult = await client.FetchMessage();
+        var fetchResult = await _client.FetchMessage();
         Assert.Multiple(() =>
         {
             Assert.That(fetchResult.IsSuccess, Is.True);

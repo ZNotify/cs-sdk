@@ -2,25 +2,25 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentResults;
 using Newtonsoft.Json;
-using ZNotify.Entity;
 
 namespace ZNotify;
 
 public class Client
 {
-    private readonly HttpClient _client;
-    private readonly string _userId;
+    private readonly APIClient _client;
+    private readonly string _userSecret;
     private readonly string _endpoint;
 
-    private Client(string userId, string endpoint = Static.DefaultEndpoint)
+    private Client(string userSecret, string endpoint = Static.DefaultEndpoint)
     {
-        _userId = userId;
+        _userSecret = userSecret;
         _endpoint = endpoint;
-        _client = GetHttpClient();
+        _client = new APIClient(endpoint, GetHttpClient());
     }
 
     private static HttpClient GetHttpClient()
@@ -31,106 +31,87 @@ public class Client
         return client;
     }
 
-    public static async Task<Result<Client>> Create(string userId, string endpoint = Static.DefaultEndpoint)
+    public static Result<Client> Create(string userSecret, string endpoint = Static.DefaultEndpoint)
     {
-        var result = await Check(userId, endpoint);
-        return result ? Result.Ok(new Client(userId, endpoint)) : Result.Fail("UserId not valid");
+        var result = Result.Try(() => Check(userSecret, endpoint).ConfigureAwait(false).GetAwaiter().GetResult());
+        
+        if (result.IsFailed)
+        {
+            return Result.Fail<Client>(result.Errors);
+        }
+
+        return result.Value ? Result.Ok(new Client(userSecret, endpoint)) : Result.Fail("User secret not valid");
     }
 
-    public static async Task<bool> Check(string userId, string endpoint = Static.DefaultEndpoint)
+    private static async Task<bool> Check(string userSecret, string endpoint)
     {
-        var urlBase = $"{endpoint}/check";
-        // query string encode
-        var url = $"{urlBase}?user_id={Uri.EscapeDataString(userId)}";
-        
-        var response = await GetHttpClient().GetAsync(url);
-        var responseString = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<Response<bool>>(responseString)!.Body;
+        var client = new APIClient(endpoint, GetHttpClient());
+        var result = await client.CheckUserSecretAsync(userSecret).ConfigureAwait(false);
+        return result.Body ?? false;
     }
 
     public async Task<Result<Message>> Send(MessageOption option)
     {
-        var data = new List<KeyValuePair<string, string>>();
-
-        if (option.Content.Length > 0)
+        async Task<ResponseEntity_Message> Action()
         {
-            data.Add(new KeyValuePair<string, string>("content", option.Content));
-        }
-        else
-        {
-            return Result.Fail("Content is required");
-        }
-
-        if (option.Title.Length > 0)
-        {
-            data.Add(new KeyValuePair<string, string>("title", option.Title));
+            return await _client.SendMessageAsync(
+                _userSecret,
+                option.Title,
+                option.Content,
+                option.LongContent,
+                option.Priority
+            );
         }
 
-        if (option.LongContent.Length > 0)
-        {
-            data.Add(new KeyValuePair<string, string>("long", option.LongContent));
-        }
-
-        data.Add(new KeyValuePair<string, string>("priority", option.Priority.GetDescription()));
-
-        var url = $"{_endpoint}/{_userId}/send";
-
-        var response = await _client.PostAsync(url, new FormUrlEncodedContent(data));
-        if (response.IsSuccessStatusCode)
-        {
-            var content = await response.Content.ReadAsStringAsync();
-            return Result.Ok(JsonConvert.DeserializeObject<Response<Message>>(content)!.Body);
-        }
-        else
-        {
-            var content = await response.Content.ReadAsStringAsync();
-            var errText = JsonConvert.DeserializeObject<Response<string>>(content)!.Body;
-            return Result.Fail(errText);
-        }
+        var ret = await Result.Try(Action);
+        return ret.IsFailed ? Result.Fail<Message>(ret.Errors) : Result.Ok(ret.Value!.Body);
     }
 
-    public async Task<Result<bool>> Register(string deviceId, string token, ChannelType channel)
+    public async Task<Result<bool>> Register(DeviceOption option)
     {
-        if (!Guid.TryParse(deviceId, out _))
+        if (!Guid.TryParse(option.DeviceId, out _))
         {
             return Result.Fail("DeviceId is not UUID");
         }
-        
-        var data = new List<KeyValuePair<string, string>>
-        {
-            new("channel", channel.GetDescription()),
-            new("token", token)
-        };
 
-        var url = $"{_endpoint}/{_userId}/token/{deviceId}";
-        var response = await _client.PutAsync(url, new FormUrlEncodedContent(data));
-        if (response.IsSuccessStatusCode)
+        async Task<ResponseBool> Action()
         {
-            var content = await response.Content.ReadAsStringAsync();
-            return Result.Ok(JsonConvert.DeserializeObject<Response<bool>>(content)!.Body);
+            return await _client.CreateDeviceAsync(
+                _userSecret,
+                option.DeviceId,
+                option.Channel,
+                option.DeviceName,
+                option.DeviceMeta,
+                option.Token
+            );
         }
-        else
-        {
-            var content = await response.Content.ReadAsStringAsync();
-            var errText = JsonConvert.DeserializeObject<Response<string>>(content)!.Body;
-            return Result.Fail(errText);
-        }
+
+        var ret = await Result.Try(Action);
+        return ret.IsSuccess ? Result.Ok(ret.Value!.Body ?? false) : Result.Fail<bool>(ret.Errors);
     }
 
-    public async Task<Result<List<Message>>> FetchMessage()
+    public async Task<Result<List<Message>>> FetchMessage(int skip = 0, int limit = 20)
     {
-        var url = $"{_endpoint}/{_userId}/record";
-        var response = await _client.GetAsync(url);
-        if (response.IsSuccessStatusCode)
+        async Task<ResponseArray_entity_Message> Action()
         {
-            var content = await response.Content.ReadAsStringAsync();
-            return Result.Ok(JsonConvert.DeserializeObject<Response<List<Message>>>(content)!.Body);
+            return await _client.GetMessagesByUserSecretAsync(this._userSecret, skip, limit);
         }
-        else
-        {
-            var content = await response.Content.ReadAsStringAsync();
-            var errText = JsonConvert.DeserializeObject<Response<string>>(content)!.Body;
-            return Result.Fail(errText);
-        }
+
+        var ret = await Result.Try(Action);
+        return ret.IsFailed ? Result.Fail<List<Message>>(ret.Errors) : Result.Ok(ret.Value!.Body.ToList());
     }
 }
+
+public record struct MessageOption(
+    string Content,
+    string Title = "Notification",
+    string LongContent = "",
+    Priority2 Priority = Priority2.Normal);
+
+public record struct DeviceOption(
+    string DeviceId,
+    Channel Channel,
+    string Token,
+    string DeviceName = "",
+    string DeviceMeta = ""
+);

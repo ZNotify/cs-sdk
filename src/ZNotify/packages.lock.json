@@ -26,12 +26,12 @@
       },
       "NSwag.ApiDescription.Client": {
         "type": "Direct",
-        "requested": "[14.1.0, )",
-        "resolved": "14.1.0",
-        "contentHash": "DnqjXwi+f3FdZVFhh2RZVCS+ZwmsD2pVBcEFdFiSQGddRw/f5p2y7GXlrPhU66pFk4NuJyViV8TeUmwiD+jEEg==",
+        "requested": "[14.2.0, )",
+        "resolved": "14.2.0",
+        "contentHash": "oJLWyrurv7ekhPVq7dvVvEC47RRcKdWQIMZANLUxiKNZPOwAfzHS/jzURpgpxui5PYtzHtJSBtjcUpEr+UkP0A==",
         "dependencies": {
           "Microsoft.Extensions.ApiDescription.Client": "6.0.3",
-          "NSwag.MSBuild": "14.1.0"
+          "NSwag.MSBuild": "14.2.0"
         }
       },
       "Microsoft.Extensions.Logging.Abstractions": {
@@ -41,8 +41,8 @@
       },
       "NSwag.MSBuild": {
         "type": "Transitive",
-        "resolved": "14.1.0",
-        "contentHash": "Y7ydRTUCUi1DaVml6r3W7NMgvhkkJY1CTnFfc3jQIBPHwvvegVqRD3C5xdPwgZp+KZ5dUarH6bfK3J2Y2FjVhQ=="
+        "resolved": "14.2.0",
+        "contentHash": "KqF8VT+67XBAQSKOV36vsXwvtkcWfJHnyVY8+muDhC2R7uV4wh0/LGQului+exKfvDfySADl48QT+wQnjsgRAg=="
       },
       "System.Runtime.CompilerServices.Unsafe": {
         "type": "Transitive",

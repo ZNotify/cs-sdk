@@ -9,7 +9,13 @@ on:
       - '**.csproj'
       - '**/packages.lock.json'
       - '.github/workflows/test.yml'
-  workflow_call: 
+  workflow_call:
+    inputs:
+      require-current-artifact:
+        description: Require the server artifact from the current workflow run
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-and-test:
@@ -25,6 +31,8 @@ jobs:
           repository: ZNotify/cs-sdk
 
       - uses: ZNotify/test-server-action@master
+        with:
+          require-current-artifact: ${{ inputs.require-current-artifact || false }}
         
       - uses: actions/cache@v3
         with:
@@ -43,4 +51,5 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+

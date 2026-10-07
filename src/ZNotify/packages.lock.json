@@ -14,9 +14,9 @@
       },
       "Microsoft.Extensions.ApiDescription.Client": {
         "type": "Direct",
-        "requested": "[9.0.0, )",
-        "resolved": "9.0.0",
-        "contentHash": "IdMbOqk1voSh3Bavt5MRDXtJNNrMvRaiXHA8qZ7VdIA+U2I9jBAexuoo8eWlvneDuwB9al3Z2u14rNSB25u5mg=="
+        "requested": "[9.0.1, )",
+        "resolved": "9.0.1",
+        "contentHash": "esKA4K/NyEPnGKTgcLIQuL+ssZhz7UGba6G5Zjy7mrqpDCkSVZpKiGo/eWIITxShUsN9/ZX+x6MjFX1A2J1Vqw=="
       },
       "Newtonsoft.Json": {
         "type": "Direct",
